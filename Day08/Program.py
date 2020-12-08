@@ -1,6 +1,3 @@
-import re
-
-
 def parseInstraction(line):
     operation, argument = line.split(' ')
     argument = int(argument)
