@@ -12,14 +12,10 @@ def add_floor_border(map):
     map.append(floor_line)
     return map
 
-
-def get_seat_next_state(x, y, map):
-    current_seat_state = map[y][x]
-    if current_seat_state == FLOOR:
-        return FLOOR
-
+def get_adjecent_seats(x, y, map):
     sizeX = len(map[0])
     sizeY = len(map)
+
     adjacent_seats = []
 
     if x > 0:
@@ -40,11 +36,14 @@ def get_seat_next_state(x, y, map):
         adjacent_seats.append(map[y-1][x])
     if y < sizeY - 1:
         adjacent_seats.append(map[y+1][x])
+    return adjacent_seats
 
-    return get_seat_next_state_by_adjacents(current_seat_state, adjacent_seats)
+def get_seat_next_state(x, y, map, get_adjecent_seats_func):
+    current_seat_state = map[y][x]
+    if current_seat_state == FLOOR:
+        return FLOOR
 
-
-def get_seat_next_state_by_adjacents(current_seat_state, adjacent_seats):
+    adjacent_seats = get_adjecent_seats_func(x, y, map)
     if current_seat_state == FLOOR:
         return FLOOR
 
@@ -58,23 +57,20 @@ def get_next_map(map):
     next_map = []
     for y in range(len(map)):
         line = map[y]
-        line2 = ''.join([get_seat_next_state(x, y, map)
+        line2 = ''.join([get_seat_next_state(x, y, map, get_adjecent_seats)
                          for x in range(len(line))])
         next_map.append(line2)
     return next_map
 
-
 def print_map(map):
     for line in map:
         print(line)
-
 
 def get_seat_count(map, seat_type):
     counter = 0
     for line in map:
         counter += len([x for x in line if x == seat_type])
     return counter
-
 
 map = open('Day11\input.txt').read().split('\n')
 
