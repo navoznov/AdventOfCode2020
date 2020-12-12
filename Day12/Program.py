@@ -19,10 +19,10 @@ def get_direction_after_turn(current_direction, turn_directon, angle):
 
 lines = open('Day12\input.txt').read().split('\n')
 actions = [(l[0], int(l[1:])) for l in lines]
+sum_koefs = {'N': ('Y', 1), 'E': ('X', 1), 'S': ('Y', -1), 'W': ('X', -1), }
 
 # part 1
 facing = 'E'
-sum_koefs = {'N': ('Y', 1), 'E': ('X', 1), 'S': ('Y', -1), 'W': ('X', -1), }
 sums = {'X': 0, 'Y': 0}
 for action in actions:
     directon, argument = action
@@ -38,3 +38,29 @@ for action in actions:
 
 print(abs(sums['X']) + abs(sums['Y']))
 
+# part 2
+koefs = {'N': (0, 1), 'E': (1, 0), 'S': (0, -1), 'W': (-1, 0), }
+waypoint = (10, 1)
+ship = (0 , 0)
+
+def sum_vectors(a, b):
+    return tuple(map(lambda x, y: x + y, a, b))
+
+def rotate_waypoint(waypoint):
+    return (waypoint[1], -1 * waypoint[0])
+
+for action in actions:
+    directon, argument = action
+
+    if directon == 'F':
+        movement_vector = tuple([coord * argument for coord in waypoint])
+        ship = sum_vectors(ship, movement_vector)
+    elif directon == 'R' or directon == 'L':
+        turn_count = get_clockwize_turn_count(directon, argument)
+        for _ in range(turn_count):
+            waypoint = rotate_waypoint(waypoint)
+    else:
+        vector = tuple([coordKoef * argument for coordKoef in koefs[directon]])
+        waypoint = sum_vectors(waypoint, vector)
+
+print(sum([abs(koord) for koord in ship]))
