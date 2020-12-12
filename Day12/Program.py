@@ -1,27 +1,40 @@
-def get_facing_after_turn(current_facing, directon, angle):
-    if directon == 'L':
-        directon = 'R'
+def get_clockwize_turn_count(turn_directon, angle):
+    if turn_directon == 'L':
+        turn_directon = 'R'
         angle = 360 - angle
 
-    turns = {'E': 'S', 'S': 'W', 'W': 'N', 'N': 'E', }
-    turns_count = int(angle / 90)
-    facing = current_facing
-    for i in range(turns_count):
-        facing = turns[facing]
+    return int(angle / 90)
 
-    return facing
+
+def get_direction_after_turn(current_direction, turn_directon, angle):
+    turns_count = get_clockwize_turn_count(turn_directon, angle)
+
+    turns = {'E': 'S', 'S': 'W', 'W': 'N', 'N': 'E', }
+    direction = current_direction
+    for i in range(turns_count):
+        direction = turns[direction]
+
+    return direction
+
 
 lines = open('Day12\input.txt').read().split('\n')
 actions = [(l[0], int(l[1:])) for l in lines]
+
+# part 1
 facing = 'E'
-sums = {'N': 0, 'E': 0, 'S': 0, 'W': 0, }
+sum_koefs = {'N': ('Y', 1), 'E': ('X', 1), 'S': ('Y', -1), 'W': ('X', -1), }
+sums = {'X': 0, 'Y': 0}
 for action in actions:
     directon, argument = action
-    if directon in sums.keys():
-        sums[directon] += argument
+    koef_info = sum_koefs.get(directon, None)
+    if koef_info != None:
+        axis, koef = koef_info
+        sums[axis] += koef * argument
     elif directon == 'F':
-        sums[facing] += argument
+        axis, koef = sum_koefs[facing]
+        sums[axis] += koef * argument
     else:
-        facing = get_facing_after_turn(facing, directon, argument)
+        facing = get_direction_after_turn(facing, directon, argument)
 
-print(abs(sums['N'] - sums['S']) + abs(sums['E'] - sums['W']))
+print(abs(sums['X']) + abs(sums['Y']))
+
